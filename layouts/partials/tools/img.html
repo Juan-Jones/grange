@@ -1,11 +1,12 @@
 {{ $img := .img }}
+{{ $alt := .alt | default "Default Alt Text" }}  {{/* Ensure alt text is available */}}
 
 {{/* If no page resource is found, check in assets/ */}}
 {{ if not $img }}
-    {{ $imgPath := printf "images/%s" .imgPath }}  {{/* Modify as needed */}}
+    {{ $imgPath := printf "images/%s" .imgPath }}  {{/* Modify path as needed */}}
     {{ $img = resources.Get $imgPath }}
 {{ end }}
 
 {{ with $img }}
-    {{ partial "tools/_img.html" (dict "img" . "alt" .alt "quality" 80 "webpHint" "photo") }}
+    {{ partial "tools/_img.html" (dict "img" . "alt" $alt "quality" 80 "webpHint" "photo") }}
 {{ end }}
