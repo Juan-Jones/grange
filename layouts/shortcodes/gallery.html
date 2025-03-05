@@ -1,12 +1,23 @@
-{{- /* Gallery image */ -}}
-{{/*  How to use it:
-{{< gallery dir= "image-dir" >}}  */}}
+{{- /* Gallery shortcode - Retrieves images from page resources or assets/ */ -}}
 
 {{ $dir := print (.Get "dir") "/*"}}
-{{ with .Page.Resources.Match $dir }}
-{{ range . }}
- {{ $full := .Fit "1980x1080"}}
- {{ $resized := .Fill "225x120 q80" }}
- <a href="{{ $full.Permalink }}" data-lightbox="x"><img src="{{ $resized.Permalink }}"/></a>
- {{ end }}
+
+{{/* Try fetching images from page resources first */}}
+{{ $images := .Page.Resources.Match $dir }}
+
+{{/* If no images found in page resources, check assets/ */}}
+{{ if not $images }}
+    {{ $images = resources.Match (printf "images/%s/*" (.Get "dir")) }}
+{{ end }}
+
+{{ with $images }}
+    {{ range . }}
+        {{ $full := .Fit "1980x1080"}}
+        {{ $resized := .Fill "225x120 q80" }}
+        <a href="{{ $full.Permalink }}" data-lightbox="x">
+            <img src="{{ $resized.Permalink }}" alt="Gallery Image">
+        </a>
+    {{ end }}
+{{ else }}
+    <p>No images found in <strong>{{ .Get "dir" }}</strong>.</p>
 {{ end }}
