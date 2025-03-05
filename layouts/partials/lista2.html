@@ -1,19 +1,19 @@
 {{- define "content" -}}
 
- {{- $posts := .Site.Params.home.posts -}}
+ {{- $blog := .Site.Params.home.blog -}}
 
- <div class="page home"{{ if ne $posts.enable false }} data-home="posts"{{ end }}>
+ <div class="page home"{{ if ne $blog.enable false }} data-home="blog"{{ end }}>
 
-  {{- /* Posts */ -}}
-  {{- if ne $posts.enable false | and .Site.RegularPages -}}
+  {{- /* Blog */ -}}
+  {{- if ne $blog.enable false | and .Site.RegularPages -}}
    {{- /* Paginate */ -}}
-   {{- $pages := where .Site.RegularPages "Type" "posts" -}}
+   {{- $pages := where .Site.RegularPages "Type" "blog" -}}
    {{- if .Site.Params.page.hiddenFromHomePage -}}
     {{- $pages = where $pages "Params.hiddenfromhomepage" false -}}
    {{- else -}}
     {{- $pages = where $pages "Params.hiddenfromhomepage" "!=" true -}}
    {{- end -}}
-   {{- with $posts.paginate | default .Site.Params.paginate -}}
+   {{- with $blog.paginate | default .Site.Params.paginate -}}
     {{- $pages = $.Paginate $pages . -}}
    {{- else -}}
     {{- $pages = .Paginate $pages -}}
