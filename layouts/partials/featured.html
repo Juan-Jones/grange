@@ -37,8 +37,10 @@
                 <span class="text-light m-0 p-0">NEW</span>
             </div>
         </div>
-    {{ else }}
-        {{/* Step 4: If no image, use a placeholder image from `static/images/` */}}
+  {{ else }}
+          <strong class="text-danger">`{{$imagePath}}` doesn't exist</strong>
+          {{ end }}        
+{{/* Step 4: If no image, use a placeholder image from `static/images/` */}}
         <img class="card-img-top m-0 p-0 embed-responsive-item rounded" 
              src="/images/placeholder.jpg" 
              alt="No Image Available"
