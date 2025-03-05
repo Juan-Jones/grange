@@ -40,13 +40,7 @@
   {{ else }}
           <strong class="text-danger">`{{$imagePath}}` doesn't exist</strong>
           {{ end }}        
-{{/* Step 4: If no image, use a placeholder image from `static/images/` */}}
-        <img class="card-img-top m-0 p-0 embed-responsive-item rounded" 
-             src="/images/placeholder.jpg" 
-             alt="No Image Available"
-             width="1920" height="1080">
-    {{ end }}
-</a>
+
 <div class="card-body m-0 p-0 pt-3">
     <a href="{{ .Permalink | absURL }}">
         <h2 class="card-title h2 my-0 py-0">{{ .Title | markdownify }}</h2>
