@@ -1,42 +1,43 @@
- <!-- image path -->
-        {{ $imagePath:= .Params.image }}
-        {{ if $imagePath }}
-        <div class="position-relative">
-          <!-- image CDN -->
-          {{ if hasPrefix $imagePath "http" }}
-          <img loading="lazy" decoding="async" src="{{ $imagePath | safeURL }}" alt="{{ .Title }}"
-            class="img-fluid mb-5 w-100 rounded-4">
-          {{ else }}
-          <!-- /image cdn -->
+<!-- image path -->
+{{ $imagePath := .Params.image }}
+{{ if $imagePath }}
+  <div class="position-relative">
+    <!-- image CDN -->
+    {{ if hasPrefix $imagePath "http" }}
+      <img loading="lazy" decoding="async" src="{{ $imagePath | safeURL }}" alt="{{ .Title }}"
+        class="img-fluid mb-5 w-100 rounded-4">
+    {{ else }}
+      <!-- image processing for multiple devices -->
+      {{ if fileExists (printf "assets/%s" $imagePath) }}
+        {{ $image := resources.Get $imagePath }}
+        {{ $imageFallback := $image.Resize "1400x" }}
+        {{ $imageXL := $image.Resize "1400x webp" }}
+        {{ $imageLG := $image.Resize "1000x webp" }}
+        {{ $imageMD := $image.Resize "800x webp" }}
+        {{ $imageSM := $image.Resize "600x webp" }}
+        
+        <picture>
+          <source srcset="{{ $imageSM.RelPermalink }}" media="(max-width: 575px)">
+          <source srcset="{{ $imageMD.RelPermalink }}" media="(max-width: 767px)">
+          <source srcset="{{ $imageLG.RelPermalink }}" media="(max-width: 992px)">
+          <source srcset="{{ $imageXL.RelPermalink }}">
+          <img loading="lazy" decoding="async" class="img-fluid mb-5 w-100 rounded-4"
+            src="{{ $imageFallback.RelPermalink }}" alt="{{ .Title }}"
+            width="{{ $image.Width }}" height="{{ $image.Height }}">
+        </picture>
+      {{ else }}
+        <strong class="text-danger">`{{ $imagePath }}` doesn't exist</strong>
+      {{ end }}
+    {{ end }}
+    <!-- /image processing for multiple devices -->
 
-          <!-- image processing for multiple device -->
-          {{ if fileExists (add `assets/` $imagePath) }}
-          {{ $image:= resources.Get $imagePath }}
-          {{ $imageFallback:= $image.Resize "1400x" }}
-          {{ $imageXL:= $image.Resize "1400x webp" }}
-          {{ $imageLG:= $image.Resize "1000x webp" }}
-          {{ $imageMD:= $image.Resize "800x webp" }}
-          {{ $imageSM:= $image.Resize "600x webp" }}
-          <picture>
-            <source srcset="{{ $imageSM.RelPermalink }}" media="(max-width: 575px)">
-            <source srcset="{{ $imageMD.RelPermalink }}" media="(max-width: 767px)">
-            <source srcset="{{ $imageLG.RelPermalink }}" media="(max-width: 992px)">
-            <source srcset="{{ $imageXL.RelPermalink }}">
-            <img loading="lazy" decoding="async" class="img-fluid mb-5 w-100 rounded-4"
-              src="{{$imageFallback.RelPermalink}}" alt="{{.Title}}" width="{{$image.Width}}"
-              height="{{$image.Height}}">
-          </picture>
-   
-          {{ end }}
-          <!-- /image processing for multiple device -->
-
-            <div class="shadow-sm p-0 bg-dark rounded-left border-left border-top border-bottom border-light 
-                        text-center d-flex align-items-center justify-content-center"
-                 style="position:absolute; top:1em; right:0; width: 5em; height: 2em;">
-                <span class="text-light m-0 p-0">NEW</span>
-            </div>
-        </div>
-          {{ end }}        
+    <div class="shadow-sm p-0 bg-dark rounded-left border-left border-top border-bottom border-light 
+                text-center d-flex align-items-center justify-content-center"
+         style="position:absolute; top:1em; right:0; width: 5em; height: 2em;">
+        <span class="text-light m-0 p-0">NEW</span>
+    </div>
+  </div>
+{{ end }}
 
 <div class="card-body m-0 p-0 pt-3">
     <a href="{{ .Permalink | absURL }}">
