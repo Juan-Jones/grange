@@ -1,23 +1,11 @@
-{{/* Set default options */}}
-{{ $opts := . | merge (dict
- "alt" ""
- "class" ""
- "loading" ""
- "webpHint" "photo"
- "breakpoints" (slice 480 960 1920)
- "widths" (slice 480 960 1920 -1)
- "quality" 75)
-}}
+{{ $img := .img }}
 
-{{/* Ensure the image is properly set */}}
-{{ if .img }}
-    {{/* Check if the image is a page resource (has .Key) */}}
-    {{ if .img.Key }}
-        {{ partialCached "tools/_img" $opts . .img.Key }}
-    {{ else }}
-        {{/* If it's from assets, just pass it without caching */}}
-        {{ partial "tools/_img" $opts }}
-    {{ end }}
-{{ else }}
-    <p>Image not available</p>
+{{/* If no page resource is found, check in assets/ */}}
+{{ if not $img }}
+    {{ $imgPath := printf "images/%s" .imgPath }}  {{/* Modify as needed */}}
+    {{ $img = resources.Get $imgPath }}
+{{ end }}
+
+{{ with $img }}
+    {{ partial "tools/_img.html" (dict "img" . "alt" .alt "quality" 80 "webpHint" "photo") }}
 {{ end }}
