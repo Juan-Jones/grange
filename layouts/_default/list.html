@@ -18,22 +18,37 @@
 			<p class="text-center text-muted">{{ . | markdownify }}</p>
 			{{ end }}
 
-			{{- /* Cover Image */ -}}
-			<div class="row justify-content-center mx-2">
-				{{ $img := (.Resources.ByType "image").GetMatch "featured-image" }}
-				{{ with $img }}
-				{{ $imageName := $img.Title }}
-				{{ $imageName = $imageName | strings.TrimSuffix (path.Ext $imageName )}}
-				{{ partial "tools/img" (dict "img" . "alt" $imageName ) }}
-				{{ end }}				
-			</div>
-			{{/*  {{ $img := (.Resources.ByType "image").GetMatch "featured-image" }}
-			{{ with $img }}
-			{{ $imageName := $img.Title }}
-			{{ $imageName = $imageName | strings.TrimSuffix (path.Ext $imageName )}}
-			{{ partial "tools/img" (dict "img" . "alt" $imageName ) }}
-			{{ end }}  */}}
+			{{- /* Cover Image - Supports both Page Resources and Assets/ */ -}}
+<div class="row justify-content-center mx-2">
+    {{ $img := "" }}
 
+    {{/* Check if the post defines a featured image in front matter */}}
+    {{ with .Params.image }}
+        {{ $imgPath := printf "images/%s" . }}  {{/* Adjust path as needed */}}
+
+        {{/* Check if image exists in assets/ */}}
+        {{ if (fileExists (printf "assets/%s" .)) }}
+            {{ $img = resources.Get $imgPath }}
+            {{ if $img }}
+                {{ $img = $img.Resize "650x" }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+
+    {{/* If no asset image is found, fallback to page resources */}}
+    {{ if not $img }}
+        {{ $img = (.Resources.ByType "image").GetMatch "featured-image" }}
+    {{ end }}
+
+    {{/* Render the image using tools/img */}}
+    {{ with $img }}
+        {{ $imageName := .Title }}
+        {{ $imageName = $imageName | strings.TrimSuffix (path.Ext $imageName )}}
+        {{ partial "tools/img" (dict "img" . "alt" $imageName ) }}
+    {{ else }}
+        <p>No cover image available.</p>
+    {{ end }}
+</div>
 			<!-- List Post Area -->
 			{{- partial "listview.html" . -}}
 		</div>
