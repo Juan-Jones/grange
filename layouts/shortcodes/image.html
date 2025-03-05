@@ -1,11 +1,19 @@
-{{- /* Post Image */ -}}
-{{/*  How to use it:
-{{< image "insert image.png" "Insert caption">}}  */}}
+{{- /* Post Image Shortcode - Supports assets/ images */ -}}
+
+{{ $img := .Get 0 }}
+{{ $caption := .Get 1 | default "" }}
+
+{{/* Check if the image exists in assets/ */}}
+{{ $assetImg := resources.Get (printf "images/%s" $img) }}
+
+{{ if $assetImg }}
+    {{ $img = $assetImg.Permalink }}
+{{ end }}
 
 <figure>
- <img loading="lazy" class="img-fluid mx-auto d-block rounded" 
-  src="{{.Get 0}}" type="image/webp"
-  alt="{{.Get 1 | plainify}}" 
-  width="w-100" height="h-100">
- <figcaption style="text-align: center">{{.Get 1 | safeHTML }}</figcaption>
+    <img loading="lazy" class="img-fluid mx-auto d-block rounded"
+         src="{{ $img }}" type="image/webp"
+         alt="{{ $caption | plainify }}"
+         width="w-100" height="h-100">
+    <figcaption style="text-align: center">{{ $caption | safeHTML }}</figcaption>
 </figure>
