@@ -1,7 +1,7 @@
 <div id="author" class="card mt-0 mb-4">
     <p class="card-header h3 text-center bg-light text-uppercase">Recent Posts</p>
 
-    {{- $pages := (where .Site.RegularPages "Section" "posts").ByDate.Reverse -}}
+    {{- $pages := (where .Site.RegularPages "Section" "blog").ByDate.Reverse -}}
     {{ range first 5 $pages }}
 
     <div class="card-body" style="margin:-5px -15px -15px">
