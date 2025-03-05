@@ -1,14 +1,21 @@
-{{/*
- Only include image if image width exceeds breakpoint width, and if breakpoint
- shouldn't be skipped.
-*/}}
-{{ $width := cond (eq .width -1) .img.Width .width }}
+{{/* Ensure width is properly set */}}
+{{ $width := .width | default -1 }}
+
+{{/* If width is invalid, use the original image width */}}
+{{ if or (eq $width -1) (not $width) }}
+    {{ $width = .img.Width }}
+{{ end }}
+
+{{/* Only include image if width is valid and resizing is needed */}}
 {{ if and (lt $width .img.Width) (ne $width -2) }}
- {{ with .img.Resize (printf "%dx webp q%d %s" $width .quality .webpHint) }}
-  {{ $breakpoint := "" }}
-  {{ with $.breakpoint }}
-   {{ $breakpoint = printf "media=(min-width:%dpx)" . }}
-  {{ end }}
-  <source {{$breakpoint|safeHTMLAttr}} srcset="{{.RelPermalink}}" type="image/webp" />
- {{ end }}
+    {{ with .img.Resize (printf "%dx webp q%d %s" $width .quality .webpHint) }}
+        {{ $breakpoint := "" }}
+        {{ with $.breakpoint }}
+            {{ $breakpoint = printf "media=(min-width:%dpx)" . }}
+        {{ end }}
+        <source {{$breakpoint|safeHTMLAttr}} srcset="{{.RelPermalink}}" type="image/webp" />
+    {{ end }}
+{{ else }}
+    {{/* Log a warning in Hugo build output */}}
+    {{ warnf "Skipping resize: Invalid width (%v) for image: %s" $width .img }}
 {{ end }}
