@@ -39,7 +39,10 @@
       {{ $imgURL = .Permalink }}
   {{ end }}
 
-  <img loading="lazy" class="img-fluid mx-auto d-block rounded mb-4" src="{{ $imgURL }}" height="{{ .Height }}" width="{{ .Width }}"
-   type="{{ .MediaType }}" {{$attributes|safeHTMLAttr}} />
+  <img loading="lazy" class="img-fluid mx-auto d-block rounded mb-4"
+       src="{{ $imgURL }}" height="{{ .Height }}" width="{{ .Width }}"
+       type="{{ .MediaType }}" />
  </picture>
+{{ else }}
+    <p>⚠️ Image not found</p>
 {{ end }}
