@@ -11,9 +11,10 @@
 
             {{/* Check if image exists in assets/ */}}
             {{ if (fileExists (printf "assets/%s" .)) }}
-                {{ $image = resources.Get $imgPath }}
-                {{ if $image }}
-                    {{ $image = $image.Resize "650x" }}
+                {{ $imgResource := resources.Get $imgPath }}
+                {{ if $imgResource }}
+                    {{ $imgResource = $imgResource.Resize "650x" }}
+                    {{ $image = $imgResource.RelPermalink }}  {{/* Store URL as a string */}}
                 {{ end }}
             {{ end }}
         {{ end }}
@@ -24,7 +25,7 @@
             "tags" .Params.tags 
             "description" .Description 
             "content" (.Plain | htmlUnescape)
-            "image" (cond (ne $image "") (printf "%s%s" .Site.BaseURL $image.RelPermalink) "")
+            "image" (cond (ne $image "") (printf "%s%s" .Site.BaseURL $image) "")
         ) }}
     {{- end }}
 {{- end }}
