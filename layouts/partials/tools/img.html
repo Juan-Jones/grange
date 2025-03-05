@@ -1,14 +1,4 @@
-{{/* Set defaults */}}
-{{/*  {{ $opts := . | merge (dict
- "alt" ""
- "class" ""
- "loading" ""
- "webpHint" "photo"
- "breakpoints" (slice 768 992 1200)
- "widths" (slice 768 992 1200 -1)
- "quality" 75)
-}}  */}}
-
+{{/* Set default options */}}
 {{ $opts := . | merge (dict
  "alt" ""
  "class" ""
@@ -19,9 +9,15 @@
  "quality" 75)
 }}
 
-
-{{/*
- Hugo doesn't seem to distinguish between image resources well.
- Therefore, pass the image path as another variant.
-*/}}
-{{ partialCached "tools/_img" $opts . .img.Key }}
+{{/* Ensure the image is properly set */}}
+{{ if .img }}
+    {{/* Check if the image is a page resource (has .Key) */}}
+    {{ if .img.Key }}
+        {{ partialCached "tools/_img" $opts . .img.Key }}
+    {{ else }}
+        {{/* If it's from assets, just pass it without caching */}}
+        {{ partial "tools/_img" $opts }}
+    {{ end }}
+{{ else }}
+    <p>Image not available</p>
+{{ end }}
