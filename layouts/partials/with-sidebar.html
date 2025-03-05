@@ -43,13 +43,10 @@
     {{ .Content }}
    </div>
    {{- partial "components/mailchimp.html" . -}}
-   {{- partial "components/author.html" . -}} {{/* Author box  */}}
   </div>
 
   {{/*  Sidebar  */}}
   <aside class="col-md-7 col-lg-4">
-   {{- partial "components/author-sb.html" . -}} {{/* Author box  */}}
-   {{- partial "components/yt-banner.html" . -}} {{/* YouTube Banner  */}}
    {{- partial "components/mailchimp.html" . -}} {{/*  Email Subscription  */}}
    {{ partial "components/recent-widget.html" . }} {{/* TAG Collection  */}}
    {{/*  {{- partial "components/completed-mark.html" . -}} */}}
