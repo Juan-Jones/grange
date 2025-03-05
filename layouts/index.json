@@ -1,7 +1,32 @@
 {{- $pages := slice }}
-{{- range .Site.Pages }}
-{{- if and .Title (or (ne (.Scratch.Get "relearnIsHiddenStem") true) (ne .Site.Params.disableSearchHiddenPages true) ) }}
-{{- $pages = $pages | append (dict "uri" .RelPermalink "title" .Title "tags" .Params.tags "description" .Description "content" (.Plain | htmlUnescape)) }}
+
+{{- range .Site.RegularPages }}
+    {{- if and .Title (or (ne (.Scratch.Get "relearnIsHiddenStem") true) (ne .Site.Params.disableSearchHiddenPages true) ) }}
+
+        {{ $image := "" }}
+
+        {{/* Check if an image is defined in front matter */}}
+        {{ with .Params.image }}
+            {{ $imgPath := printf "images/%s" . }}  {{/* Adjust path as needed */}}
+
+            {{/* Check if image exists in assets/ */}}
+            {{ if (fileExists (printf "assets/%s" .)) }}
+                {{ $image = resources.Get $imgPath }}
+                {{ if $image }}
+                    {{ $image = $image.Resize "650x" }}
+                {{ end }}
+            {{ end }}
+        {{ end }}
+
+        {{- $pages = $pages | append (dict 
+            "uri" .RelPermalink 
+            "title" .Title 
+            "tags" .Params.tags 
+            "description" .Description 
+            "content" (.Plain | htmlUnescape)
+            "image" (cond (ne $image "") (printf "%s%s" .Site.BaseURL $image.RelPermalink) "")
+        ) }}
+    {{- end }}
 {{- end }}
-{{- end }}
+
 {{- $pages | jsonify (dict "indent" "  ") }}
