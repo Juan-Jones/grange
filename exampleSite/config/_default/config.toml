@@ -1,9 +1,10 @@
-title = "Arberia Theme"
-baseURL = "https://arberiatheme.netlify.app/"
-relativeURLs = "True"
+title = "Earn Money Online"
+baseURL = "https://earnonlinemoney.org/"
+relativeURLs = "false"
 languageCode = "en-us"
 defaultContentLanguage = 'en'
-theme = "arberia"
+theme = "grange"
+uglyURLs = false
 
 # format date. See https://gohugo.io/functions/format/
 dateformat = "Monday, January 2, 2006"
@@ -13,7 +14,7 @@ dateformat = "Monday, January 2, 2006"
 # you should use the site.Params.mainSections list instead of comparing 
 # section names to hard-coded values like "posts" or "post".
 # [params]
-#   mainSections = ['posts',]
+#   mainSections = ['blog',]
 
 [taxonomies]
   tag = "tags"
@@ -36,7 +37,7 @@ dateformat = "Monday, January 2, 2006"
   unsafe = true
 
 [permalinks]
-  posts = "/:title/"
+  blog = "/:slug/"
 
 [minify]
   minifyOutput = true
