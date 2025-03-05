@@ -1,9 +1,27 @@
+{{/* Step 1: Try loading the featured image from page resources */}}
 {{ $img := (.Resources.ByType "image").GetMatch "featured-image" }}
 
-{{/* If the image is missing, try loading from `assets/images/` */}}
+{{/* Step 2: If no page resource image, check if front matter defines an image */}}
 {{ if not $img }}
-    {{ $imgPath := "images/default-featured.jpg" }}  {{/* Modify the path as needed */}}
-    {{ $img = resources.Get $imgPath }}
+    {{ with .Params.image }}
+        {{ $imgPath := printf "images/%s" . }}  {{/* Adjust path as needed */}}
+
+        {{/* Check if image exists in assets/ */}}
+        {{ if (fileExists (printf "assets/%s" .)) }}
+            {{ $img = resources.Get $imgPath }}
+            {{ if $img }}
+                {{ $img = $img.Resize "1920x" }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{/* Step 3: If no image is found, use a default fallback image from `assets/` */}}
+{{ if not $img }}
+    {{ $fallbackPath := "images/default-featured.jpg" }}
+    {{ if (fileExists (printf "assets/%s" $fallbackPath)) }}
+        {{ $img = resources.Get $fallbackPath }}
+    {{ end }}
 {{ end }}
 
 <a href="{{ .Permalink | absURL }}">
@@ -28,10 +46,31 @@
             </div>
         </div>
     {{ else }}
-        {{/* Placeholder image if no featured image is found */}}
+        {{/* Step 4: If no image, use a placeholder image from `static/images/` */}}
         <img class="card-img-top m-0 p-0 embed-responsive-item rounded" 
              src="/images/placeholder.jpg" 
              alt="No Image Available"
              width="1920" height="1080">
     {{ end }}
 </a>
+<div class="card-body m-0 p-0 pt-3">
+    <a href="{{ .Permalink | absURL }}">
+        <h2 class="card-title h2 my-0 py-0">{{ .Title | markdownify }}</h2>
+    </a>
+
+    <p class="card-text">
+        <small class="text-muted">
+            <span class="ml-2 fa fa-clock-o" aria-hidden="true"></span>
+            <span class="mr-2"> {{ .PublishDate | time.Format .Site.Params.dateFormat }}</span>
+
+            {{ partial "components/tag.html" . }}
+
+        </small>
+    </p>
+    <p class="text-muted my-1">{{ .Summary }}</p>
+</div>
+
+{{/* Sidebar */}}
+<div class="col-12 col-lg-4">
+    {{- partial "components/tag-cloud.html" . -}} 
+</div>
