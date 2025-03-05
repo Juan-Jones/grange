@@ -1,43 +1,35 @@
-{{/* Step 1: Try loading the featured image from page resources */}}
-{{ $img := (.Resources.ByType "image").GetMatch "featured-image" }}
+ <!-- image path -->
+        {{ $imagePath:= .Params.image }}
+        {{ if $imagePath }}
+        <div class="position-relative">
+          <!-- image CDN -->
+          {{ if hasPrefix $imagePath "http" }}
+          <img loading="lazy" decoding="async" src="{{ $imagePath | safeURL }}" alt="{{ .Title }}"
+            class="img-fluid mb-5 w-100 rounded-4">
+          {{ else }}
+          <!-- /image cdn -->
 
-{{/* Step 2: If no page resource image, check if front matter defines an image */}}
-{{ if not $img }}
-    {{ with .Params.image }}
-        {{ $imgPath := printf "images/%s" . }}  {{/* Adjust path as needed */}}
-
-        {{/* Check if image exists in assets/ */}}
-        {{ if (fileExists (printf "assets/%s" .)) }}
-            {{ $img = resources.Get $imgPath }}
-            {{ if $img }}
-                {{ $img = $img.Resize "1920x" }}
-            {{ end }}
-        {{ end }}
-    {{ end }}
-{{ end }}
-
-{{/* Step 3: If no image is found, use a default fallback image from `assets/` */}}
-{{ if not $img }}
-    {{ $fallbackPath := "images/default-featured.jpg" }}
-    {{ if (fileExists (printf "assets/%s" $fallbackPath)) }}
-        {{ $img = resources.Get $fallbackPath }}
-    {{ end }}
-{{ end }}
-
-<a href="{{ .Permalink | absURL }}">
-    {{ with $img }}
-        <div class="embed-responsive embed-responsive-16by9">
-            
-            <img class="card-img-top m-0 p-0 embed-responsive-item rounded" style="object-fit:contain" 
-                 src="{{ .RelPermalink }}" 
-                 alt="{{ $.Title }}" 
-                 srcset="{{ .RelPermalink }} 480w,
-                         {{ .RelPermalink }} 960w,
-                         {{ .RelPermalink }} 1920w" 
-                 sizes="(max-width: 480px) 480px, 
-                        (max-width: 960px) 960px, 
-                        1920px" 
-                 width="1920" height="1080">
+          <!-- image processing for multiple device -->
+          {{ if fileExists (add `assets/` $imagePath) }}
+          {{ $image:= resources.Get $imagePath }}
+          {{ $imageFallback:= $image.Resize "1400x" }}
+          {{ $imageXL:= $image.Resize "1400x webp" }}
+          {{ $imageLG:= $image.Resize "1000x webp" }}
+          {{ $imageMD:= $image.Resize "800x webp" }}
+          {{ $imageSM:= $image.Resize "600x webp" }}
+          <picture>
+            <source srcset="{{ $imageSM.RelPermalink }}" media="(max-width: 575px)">
+            <source srcset="{{ $imageMD.RelPermalink }}" media="(max-width: 767px)">
+            <source srcset="{{ $imageLG.RelPermalink }}" media="(max-width: 992px)">
+            <source srcset="{{ $imageXL.RelPermalink }}">
+            <img loading="lazy" decoding="async" class="img-fluid mb-5 w-100 rounded-4"
+              src="{{$imageFallback.RelPermalink}}" alt="{{.Title}}" width="{{$image.Width}}"
+              height="{{$image.Height}}">
+          </picture>
+          {{ else }}
+          <strong class="text-danger">`{{$imagePath}}` doesn't exist</strong>
+          {{ end }}
+          <!-- /image processing for multiple device -->
 
             <div class="shadow-sm p-0 bg-dark rounded-left border-left border-top border-bottom border-light 
                         text-center d-flex align-items-center justify-content-center"
